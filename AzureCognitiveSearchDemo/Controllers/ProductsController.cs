@@ -42,7 +42,7 @@ namespace AzureCognitiveSearchDemo.Controllers
             return Ok(product);
         }
 
-        [HttpGet("product/search")]
+        [HttpGet("product/search/{searchData}")]
         public async Task<IActionResult> SearchProduct(string searchData)
         {
             //Podemos buscar agregando filtros
