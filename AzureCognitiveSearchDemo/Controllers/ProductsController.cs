@@ -46,8 +46,16 @@ namespace AzureCognitiveSearchDemo.Controllers
         public async Task<IActionResult> SearchProduct(string searchData)
         {
             //Podemos buscar agregando filtros
-            var results = await _searchClient.SearchAsync<Products>(searchData);
-            return Ok(results.Value.GetResultsAsync());
+            var options = new SearchOptions();
+
+            options.Select.Add("Id");
+            options.Select.Add("Name");
+            options.Select.Add("Description");
+
+            var results = await _searchClient.SearchAsync<ProductsDTO>(searchData,options);
+            var products = results.Value.GetResults().Select(x => x.Document);
+
+            return Ok(products);
         }
 
 
