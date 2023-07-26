@@ -34,7 +34,7 @@ namespace AzureCognitiveSearchDemo.Controllers
         [HttpGet("product/{id}")]
         public async Task<IActionResult> GetProductById(string id)
         {
-            Products product = await _context.Products.FirstOrDefaultAsync(x => x.Id == id);
+            Products product = await _context.Products.FirstOrDefaultAsync(x => x.Id.ToString() == id);
             if(product == null)
             {
                 return BadRequest("objeto no encontrado");
@@ -46,23 +46,16 @@ namespace AzureCognitiveSearchDemo.Controllers
         public async Task<IActionResult> SearchProduct(string searchData)
         {
             //Podemos buscar agregando filtros
-            var options = new SearchOptions();
-
-            options.Select.Add("Id");
-            options.Select.Add("Name");
-            options.Select.Add("Description");
-
-            var results = await _searchClient.SearchAsync<ResultsDTO>(searchData);
-            var products = results.Value.GetResultsAsync();
-            return Ok(products.GetAsyncEnumerator());
+            var results = await _searchClient.SearchAsync<Products>(searchData);
+            return Ok(results.Value.GetResultsAsync());
         }
 
 
         // POST api/<ProductsController>
         [HttpPost("product")]
-        public async Task<IActionResult> PostProduct([FromBody] string Name, string Description)
+        public async Task<IActionResult> PostProduct([FromBody] ProductsDTO request)
         {
-            Products newProduct = new Products(Name,Description,DateTime.Now);
+            Products newProduct = new Products(request.Name, request.Description,DateTime.Now);
 
             await _context.Products.AddAsync(newProduct);
 
